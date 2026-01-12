@@ -50,29 +50,43 @@ class Node:
 @dataclass
 class IndVoltageSource(Component):
     voltage: float = 0.0
+    current: float = 0.0
+
+
+@dataclass
+class IndCurrentSource(Component):
+    voltage: float = 0.0
+    current: float = 0.0
 
 
 class ElectricalNetwork:
     def __init__(self):
-        self.nodes: dict[int, Node] = {}
+        self.nodes: list[Node] = [Node(0)]
         self.ind_voltage_sources: list[IndVoltageSource] = []
+        self.ind_current_sources: list[IndCurrentSource] = []
         self.resistors: dict[str, Resistor] = {}
 
-    def add_voltage_source(self, name: str, np: int, nn: int, voltage: float):
+    def add_ind_voltage_source(self, name: str, np: int, nn: int, voltage: float):
         source = IndVoltageSource(name=name, voltage=voltage)
-        self._add_node(np).link(source, "p")
-        self._add_node(nn).link(source, "n")
+        self.get_node(np).link(source, "p")
+        self.get_node(nn).link(source, "n")
         self.ind_voltage_sources.append(source)
+
+    def add_ind_current_source(self, name: str, np: int, nn: int, current: float):
+        source = IndCurrentSource(name=name, current=current)
+        self.get_node(np).link(source, "p")
+        self.get_node(nn).link(source, "n")
+        self.ind_current_sources.append(source)
 
     def add_resistor(self, name: str, np: int, nn: int, resistance: float):
         resistor = Resistor(name, resistance)
-        self._add_node(np).link(resistor, "p")
-        self._add_node(nn).link(resistor, "n")
+        self.get_node(np).link(resistor, "p")
+        self.get_node(nn).link(resistor, "n")
         self.resistors[name] = resistor
 
-    def _add_node(self, id: int) -> Node:
-        if id not in self.nodes.keys():
-            self.nodes[id] = Node(id=id)
+    def get_node(self, id: int) -> Node:
+        while id >= len(self.nodes):
+            self.nodes.append(Node(len(self.nodes)))
 
         return self.nodes[id]
 
@@ -110,12 +124,12 @@ class ElectricalNetwork:
         m = len(self.ind_voltage_sources)
         B = np.zeros((n, m))
 
-        for node_id, node in self.nodes.items():
+        for node in self.nodes[1:]:
             for link in node.links:
-                if not isinstance(link.component, IndVoltageSource) or node_id == 0:
+                if not isinstance(link.component, IndVoltageSource):
                     continue
 
-                i = node_id - 1
+                i = node.id - 1
                 j = self.ind_voltage_sources.index(link.component)
                 B[i, j] = 1 if link.pin == "p" else -1
 
@@ -130,6 +144,24 @@ class ElectricalNetwork:
         m = len(self.ind_voltage_sources)
         return np.zeros((m, m))
 
+    def build_i(self) -> np.ndarray:
+        # For each node, the sum of currents into that node
+        i = []
+        for node in self.nodes[1:]:
+            total = 0
+            for link in node.links:
+                if isinstance(link.component, IndCurrentSource):
+                    sign = 1 if link.pin == "p" else -1
+                    total += sign * link.component.current
+
+            i.append(total)
+
+        return np.array(i)
+
+    def build_e(self) -> np.ndarray:
+        # Voltages of independent voltage sources
+        return np.array([ivs.voltage for ivs in self.ind_voltage_sources])
+
     def run(self):
         # based on https://lpsa.swarthmore.edu/Systems/Electrical/mna/MNA3.html
         G = self.build_G()
@@ -139,10 +171,16 @@ class ElectricalNetwork:
         A = np.block([[G, B], [C, D]])
 
         # todo This doesn't account for independent current sources
-        i = np.zeros(len(self.nodes) - 1)
-        e = np.array([ivs.voltage for ivs in self.ind_voltage_sources])
+        i = self.build_i()
+        e = self.build_e()
         z = np.concat([i, e])
 
         x = np.matmul(np.linalg.inv(A), z)
-        print("x")
-        print(x)
+
+        num_nodes = len(self.nodes) - 1
+
+        for node in self.nodes[1:]:
+            node.voltage = x[node.id - 1]
+
+        for i, source in enumerate(self.ind_voltage_sources):
+            source.current = x[i + num_nodes]
