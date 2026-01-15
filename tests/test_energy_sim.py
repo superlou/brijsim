@@ -1,20 +1,20 @@
 from pytest import approx
 
 from brijsim import ElectricalEnergyModel
-from brijsim.energy_sim import Port
+from brijsim.energy_sim import EPort
 
 
 def test_model_creation():
     model = ElectricalEnergyModel()
-    model.add_port(Port(100.0, 0.0))
+    model.add_port(EPort(100.0, 0.0))
 
 
 def test_run_model_without_capacitance():
     model = ElectricalEnergyModel()
-    p1 = model.add_port(Port(10, 0))
-    p2 = model.add_port(Port(5, 0))
-    p3 = model.add_port(Port(-4, 0))
-    p4 = model.add_port(Port(-2, 0))
+    p1 = model.add_port(EPort(10, 0))
+    p2 = model.add_port(EPort(5, 0))
+    p3 = model.add_port(EPort(-4, 0))
+    p4 = model.add_port(EPort(-2, 0))
 
     model.step(0.1)
 

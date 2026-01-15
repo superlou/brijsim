@@ -1,3 +1,9 @@
+# Server
+For auto-reload: `python -m brijsim.server`
+Without auto-reload: `uv run serve`
+
+# Scrap
+
 Nodes: 0 is the reference node. Other nodes are increasing integers.
 
 Resistor:       Rname N+ N- Value
