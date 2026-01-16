@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from math import isclose
 
+import networkx as nx
+
 
 @dataclass
 class FlowPort:
@@ -27,10 +29,12 @@ class FlowPort:
 class FlowModel:
     def __init__(self):
         self.ports: list[FlowPort] = []
+        self.graph = nx.Graph()
         # todo Model ports in different connected graphs
 
-    def add_port(self, port: FlowPort):
+    def add_port(self, port: FlowPort, name: str = ""):
         self.ports.append(port)
+        self.graph.add_node(name)
         return port
 
     def step(self, dt: float):

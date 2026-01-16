@@ -1,6 +1,7 @@
 import asyncio
 import threading
 
+import networkx_mermaid
 import websockets
 from loguru import logger
 from nicegui import Event, app, ui
@@ -42,6 +43,10 @@ ship.add_element(AuxGenerator("AuxGen1", 100.0))
 ship.add_element(FusionGenerator("FusGen1"))
 ship.add_element(JumpComputer("JumpCom1"))
 
+ship.link_ports("AuxGen1:src", "FusGen1:boost")
+ship.link_ports("FusGen1:src", "JumpCom1:pwr")
+ship.link_ports("AuxGen1:src", "JumpCom1:pwr")
+
 
 @ui.page("/")
 def root():
@@ -66,6 +71,12 @@ def root():
                     with ui.row():
                         for action_name, action in element.actions.items():
                             ui.button(action_name, on_click=action)
+
+    builder = networkx_mermaid.builders.DiagramBuilder(
+        orientation=networkx_mermaid.DiagramOrientation.LEFT_RIGHT,
+        node_shape=networkx_mermaid.DiagramNodeShape.ROUND_RECTANGLE,
+    )
+    ui.mermaid(builder.build(ship.flow_model.graph))
 
 
 class RepeatTimer(threading.Timer):
