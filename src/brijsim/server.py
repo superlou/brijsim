@@ -48,23 +48,24 @@ def root():
     ui.page_title("Index")
     ui.label("Index")
 
-    for element in ship.elements:
-        with ui.list().props("bordered"):
-            with ui.expansion(element.name, value=True):
-                with ui.row():
-                    ui.label("State")
-                    ui.label().bind_text_from(element, "state")
-
-                for flow_port_name, flow_port in element.flow_ports.items():
+    with ui.grid(columns=3):
+        for element in ship.elements:
+            with ui.list().props("bordered"):
+                with ui.expansion(element.name, value=True):
                     with ui.row():
-                        ui.label(flow_port_name)
-                        ui.label().bind_text_from(
-                            flow_port, "flow_info", backward=lambda text: text
-                        )
+                        ui.label("State")
+                        ui.label().bind_text_from(element, "state")
 
-                with ui.row():
-                    for action_name, action in element.actions.items():
-                        ui.button(action_name, on_click=action)
+                    for flow_port_name, flow_port in element.flow_ports.items():
+                        with ui.row():
+                            ui.label(flow_port_name)
+                            ui.label().bind_text_from(
+                                flow_port, "flow_info", backward=lambda text: text
+                            )
+
+                    with ui.row():
+                        for action_name, action in element.actions.items():
+                            ui.button(action_name, on_click=action)
 
 
 class RepeatTimer(threading.Timer):
