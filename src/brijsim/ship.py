@@ -12,8 +12,8 @@ class Ship:
         for port_name, port in element.flow_ports.items():
             self.flow_model.add_port(port, f"{element.name}:{port_name}")
 
-    def link_ports(self, port1: str, port2: str):
-        self.flow_model.graph.add_edge(port1, port2)
+    def link_ports(self, port1_id: str, port2_id: str):
+        self.flow_model.link_ports(port1_id, port2_id)
 
     def process(self, dt: float):
         self.flow_model.step(dt)

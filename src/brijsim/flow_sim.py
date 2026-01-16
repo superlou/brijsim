@@ -32,10 +32,13 @@ class FlowModel:
         self.graph = nx.Graph()
         # todo Model ports in different connected graphs
 
-    def add_port(self, port: FlowPort, name: str = ""):
+    def add_port(self, port: FlowPort, id: str = ""):
         self.ports.append(port)
-        self.graph.add_node(name)
+        self.graph.add_node(id, port=port)
         return port
+
+    def link_ports(self, port1_id: str, port2_id: str):
+        self.graph.add_edge(port1_id, port2_id)
 
     def step(self, dt: float):
         # For all connected ports, distribute as much power
