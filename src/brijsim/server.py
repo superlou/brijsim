@@ -10,8 +10,6 @@ from brijsim.elements.computer import JumpComputer
 from brijsim.elements.generator import AuxGenerator, FusionGenerator
 from brijsim.ship import Ship
 
-from .energy_sim import ElectricalEnergyModel, EPort
-
 connections: set[ServerConnection] = set()
 connections_updated = Event()
 messaged_received = Event()
@@ -51,26 +49,22 @@ def root():
     ui.label("Index")
 
     for element in ship.elements:
-        with ui.expansion(element.name, value=True):
-            with ui.row():
-                ui.label("State")
-                ui.label().bind_text_from(element, "state")
-
-            for e_port_name, e_port in element.e_ports.items():
+        with ui.list().props("bordered"):
+            with ui.expansion(element.name, value=True):
                 with ui.row():
-                    ui.label(e_port_name)
-                    ui.label().bind_text_from(
-                        e_port,
-                        "p_capacity",
-                        backward=lambda text: f"p_capacity={text:.0f} W",
-                    )
-                    ui.label().bind_text_from(
-                        e_port, "p", backward=lambda text: f"p={text:.0f} W"
-                    )
+                    ui.label("State")
+                    ui.label().bind_text_from(element, "state")
 
-            with ui.row():
-                for action_name, action in element.actions.items():
-                    ui.button(action_name, on_click=action)
+                for flow_port_name, flow_port in element.flow_ports.items():
+                    with ui.row():
+                        ui.label(flow_port_name)
+                        ui.label().bind_text_from(
+                            flow_port, "flow_info", backward=lambda text: text
+                        )
+
+                with ui.row():
+                    for action_name, action in element.actions.items():
+                        ui.button(action_name, on_click=action)
 
 
 class RepeatTimer(threading.Timer):

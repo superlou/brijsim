@@ -1,7 +1,7 @@
 from enum import StrEnum, auto
 
 from brijsim.elements.element import Element
-from brijsim.energy_sim import EPort
+from brijsim.flow_sim import FlowPort
 
 
 class FusionGeneratorState(StrEnum):
@@ -13,7 +13,7 @@ class FusionGeneratorState(StrEnum):
 class FusionGenerator(Element):
     def __init__(self, name: str):
         super().__init__(name)
-        self.e_ports = {"src": EPort(0.0, 0.0), "boost": EPort(0.0, 0.0)}
+        self.flow_ports = {"src": FlowPort(0.0, 0.0), "boost": FlowPort(0.0, 0.0)}
         self.actions = {"start": self.start}
         self.state = FusionGeneratorState.OFF
 
@@ -21,16 +21,16 @@ class FusionGenerator(Element):
         if self.state != FusionGeneratorState.OFF:
             return
 
-        self.e_ports["boost"].p_capacity = -50
+        self.flow_ports["boost"].rate_capacity = -50
         self.state = FusionGeneratorState.STARTING
 
     def process(self, dt: float):
         match self.state:
             case FusionGeneratorState.STARTING:
-                if self.e_ports["boost"].at_p_capacity():
+                if self.flow_ports["boost"].at_p_capacity():
                     self.state = FusionGeneratorState.RUNNING
-                    self.e_ports["boost"].p_capacity = 0
-                    self.e_ports["src"].p_capacity = 100.0
+                    self.flow_ports["boost"].rate_capacity = 0
+                    self.flow_ports["src"].rate_capacity = 100.0
 
 
 class SimpleGeneratorState(StrEnum):
@@ -41,12 +41,12 @@ class SimpleGeneratorState(StrEnum):
 
 
 class AuxGenerator(Element):
-    def __init__(self, name: str, p_capacity: float):
+    def __init__(self, name: str, rate_capacity: float):
         super().__init__(name)
-        self.e_ports = {"src": EPort(0.0, 0.0)}
+        self.flow_ports = {"src": FlowPort(0.0, 0.0)}
         self.actions = {"start": self.start, "stop": self.stop}
         self.state = SimpleGeneratorState.OFF
-        self.p_capacity = p_capacity
+        self.rate_capacity = rate_capacity
         self.level: float = 0.0
 
     def start(self):
@@ -63,11 +63,11 @@ class AuxGenerator(Element):
                     self.level = 1.0
                     self.state = SimpleGeneratorState.RUNNING
 
-                self.e_ports["src"].p_capacity = self.level * self.p_capacity
+                self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
             case SimpleGeneratorState.STOPPING:
                 self.level -= 0.5 * dt
                 if self.level <= 0.0:
                     self.level = 0.0
                     self.state = SimpleGeneratorState.OFF
 
-                self.e_ports["src"].p_capacity = self.level * self.p_capacity
+                self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
