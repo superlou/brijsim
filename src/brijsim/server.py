@@ -9,6 +9,7 @@ from websockets import ServerConnection
 
 from brijsim.elements.computer import JumpComputer
 from brijsim.elements.generator import AuxGenerator, FusionGenerator
+from brijsim.elements.tanks import FuelTank
 from brijsim.ship import Ship
 
 connections: set[ServerConnection] = set()
@@ -42,10 +43,12 @@ ship = Ship()
 ship.add_element(AuxGenerator("AuxGen1", 100.0))
 ship.add_element(FusionGenerator("FusGen1"))
 ship.add_element(JumpComputer("JumpCom1"))
+ship.add_element(FuelTank("Tank1", 40000.0, 40000.0))
 
 ship.link_ports("AuxGen1:src", "FusGen1:boost")
 ship.link_ports("FusGen1:src", "JumpCom1:pwr")
 ship.link_ports("AuxGen1:src", "JumpCom1:pwr")
+ship.link_ports("Tank1:fuel", "AuxGen1:fuel")
 
 
 @ui.page("/")
@@ -53,7 +56,7 @@ def root():
     ui.page_title("Index")
     ui.label("Index")
 
-    with ui.grid(columns=3):
+    with ui.grid(columns=4):
         for element in ship.elements:
             with ui.list().props("bordered"):
                 with ui.expansion(element.name, value=True):

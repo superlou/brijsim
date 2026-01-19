@@ -43,7 +43,10 @@ class SimpleGeneratorState(StrEnum):
 class AuxGenerator(Element):
     def __init__(self, name: str, rate_capacity: float):
         super().__init__(name)
-        self.flow_ports = {"src": FlowPort(0.0, 0.0)}
+        self.flow_ports = {
+            "src": FlowPort(0.0, 0.0),
+            "fuel": FlowPort(0.0, 0.0, rate_unit="kg/h", qty_unit="kg"),
+        }
         self.actions = {"start": self.start, "stop": self.stop}
         self.state = SimpleGeneratorState.OFF
         self.rate_capacity = rate_capacity
@@ -58,6 +61,8 @@ class AuxGenerator(Element):
     def process(self, dt: float):
         match self.state:
             case SimpleGeneratorState.STARTING:
+                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
+
                 self.level += 0.5 * dt
                 if self.level >= 1.0:
                     self.level = 1.0
@@ -65,6 +70,8 @@ class AuxGenerator(Element):
 
                 self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
             case SimpleGeneratorState.STOPPING:
+                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
+
                 self.level -= 0.5 * dt
                 if self.level <= 0.0:
                     self.level = 0.0
