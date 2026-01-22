@@ -54,6 +54,14 @@ ship.link_ports("Tank1:fuel", "AuxGen1:fuel")
 @ui.page("/")
 def root():
     ui.page_title("Index")
+
+    dark = ui.dark_mode(True)
+
+    with ui.header().classes("dark:bg-gray-800"):
+        ui.switch("Dark").bind_value(dark).bind_text_from(
+            dark, "value", lambda x: "dark" if x else "light"
+        )
+
     ui.label("Index")
 
     with ui.grid(columns=4):
