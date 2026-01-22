@@ -8,8 +8,8 @@ import networkx as nx
 class FlowPort:
     rate_capacity: float
     qty_capacity: float
-    rate: float = 0
-    qty: float = 0
+    rate: float = 0.0
+    qty: float = 0.0
     rate_unit: str = "W"
     qty_unit: str = "J"
 
@@ -30,12 +30,10 @@ class FlowPort:
 
 class FlowModel:
     def __init__(self):
-        self.ports: list[FlowPort] = []
         self.graph = nx.Graph()
         # todo Model ports in different connected graphs
 
     def add_port(self, id: str, port: FlowPort):
-        self.ports.append(port)
         self.graph.add_node(id, port=port)
         return port
 
@@ -49,64 +47,71 @@ class FlowModel:
             )
 
     def solve_connected_components(self, ports: list[FlowPort], dt: float):
-        # For all connected ports, distribute as much power
-        # proportionally from sources to sinks.
+        # Reset all ports
+        for storage_sources in ports:
+            storage_sources.rate = 0.0
+
         sources = [port for port in ports if port.rate_capacity > 0.0]
         sinks = [port for port in ports if port.rate_capacity < 0.0]
-        inactives = [
-            port
-            for port in ports
-            if port.rate_capacity == 0.0 and port.qty_capacity == 0.0
-        ]
+        source_capacity = sum(port.rate_capacity for port in sources)
+        sink_demand = -sum(port.rate_capacity for port in sinks)
 
-        stores = [port for port in ports if port.qty_capacity > 0.0]
+        storage_sources = [port for port in ports if port.qty > 0.0]
+        storage_sinks = [port for port in ports if port.qty_open > 0.0]
+        storage_source_capacity = sum(port.qty * dt for port in storage_sources)
+        storage_source_qty = sum(port.qty for port in storage_sources)
+        storage_sink_qty_open = sum(port.qty_open for port in storage_sinks)
 
-        source_rate_capacity = sum(port.rate_capacity for port in sources)
-        sink_rate_capacity = sum(port.rate_capacity for port in sinks)
+        if source_capacity >= sink_demand:
+            sink_supply = min(source_capacity, sink_demand)
+            source_excess = source_capacity - sink_supply
 
-        net_rate_capacity = source_rate_capacity + sink_rate_capacity
-
-        if net_rate_capacity >= 0.0:
+            # All sink rates are met
             for sink in sinks:
                 sink.rate = sink.rate_capacity
 
-            for source in sources:
-                source.rate = (
-                    -sink_rate_capacity * source.rate_capacity / source_rate_capacity
+            # No storage was discharged, but some could be charged
+            # Divide the excess proportionally to quantity open
+            storage_supply = min(source_excess, storage_sink_qty_open)
+            for storage_sink in storage_sinks:
+                storage_sink.rate = (
+                    -storage_supply * storage_sink.qty_open / storage_sink_qty_open
                 )
+                storage_sink.qty += -storage_sink.rate * dt
 
-            # Whatever's leftover is divided among stores based on how much
-            # capacity remains.
-            # todo This doesn't make a lot of sense physically.
-            total_store_qty_open = sum([store.qty_open for store in stores])
-            quantity_available = net_rate_capacity * dt
-            if total_store_qty_open > 0.0:
-                for store in stores:
-                    store.qty += (
-                        quantity_available * store.qty_open / total_store_qty_open
-                    )
-                    store.qty = min(store.qty, store.qty_capacity)
-        else:
-            total_store_qty_available = sum([store.qty for store in stores])
-            needed_qty = -net_rate_capacity * dt
-            store_provided_qty = min(needed_qty, total_store_qty_available)
-            # Use stores
-            for store in stores:
-                if total_store_qty_available > 0:
-                    store.qty -= needed_qty * store.qty / total_store_qty_available
-                else:
-                    store.qty = 0.0
+            # Supply is divided proportionally to capacity:
+            supply = sink_supply + storage_supply
+            for source in sources:
+                source.rate = supply * source.rate_capacity / source_capacity
+        elif (source_capacity + storage_source_capacity) >= sink_demand:
+            # All sink rates are met
+            for sink in sinks:
+                sink.rate = sink.rate_capacity
 
-            # All sources are maxed out
+            # All source rates are met
             for source in sources:
                 source.rate = source.rate_capacity
 
-            for sink in sinks:
-                sink.rate = (
-                    -(source_rate_capacity + store_provided_qty / dt)
-                    * sink.rate_capacity
-                    / sink_rate_capacity
+            # Some (or all) storage was discharged based on what's left
+            # after the sources hit capacity.
+            storage_supply = sink_demand - source_capacity
+            for storage_source in storage_sources:
+                storage_source.rate = (
+                    storage_supply * storage_source.qty / storage_source_qty
                 )
+                storage_source.qty -= storage_source.rate * dt
+        else:  # Insufficient capacity, even with sources
+            supply = source_capacity + storage_source_capacity
 
-        for port in inactives:
-            port.rate = 0.0
+            # All sources are at capacity
+            for source in sources:
+                source.rate = source.rate_capacity
+
+            # All storage is emptied
+            for storage_sources in storage_sources:
+                storage_sources.rate = -storage_sources.qty * dt
+                storage_sources.qty = 0.0
+
+            # Supply is divided proportionally to capacity
+            for sink in sinks:
+                sink.rate = supply * sink.rate_capacity / sink_demand
