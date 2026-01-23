@@ -71,45 +71,70 @@ def test_discharging_model():
     assert tank.rate == approx(1.0)
 
 
-# def test_run_model_with_quantity():
-#     model = FlowModel()
-#     r1 = model.add_port("r1", FlowPort(0, 0))
-#     r2 = model.add_port("r2", FlowPort(0, 0))
-#     q1 = model.add_port("q1", FlowPort(0, 10.0))
-#     q2 = model.add_port("q2", FlowPort(0, 10.0))
+def test_full_charging_and_discharging_model():
+    model = FlowModel()
+    source = model.add_port("source", FlowPort(1.0, 0.0))
+    tank = model.add_port("tank", FlowPort(0.0, 5.0))
+    model.link_ports(source, tank)
 
-#     model.link_ports("r1", "r2")
-#     model.link_ports("r1", "q1")
-#     model.link_ports("r1", "q2")
+    # Run for a long time to fully charge
+    for i in range(100):
+        model.step(0.5)
 
-#     # The rate ports have positive net capacity, so
-#     # the quantity ports increase.
-#     r1.rate_capacity = 10.0
-#     r2.rate_capacity = -5.0
-#     model.step(1.0)
-#     assert q1.qty == approx(2.5)
-#     assert q2.qty == approx(2.5)
+    assert source.rate == approx(0.0)
+    assert tank.qty == approx(5.0)
+    assert tank.rate == approx(0.0)
 
-#     # The quantity ports should fill up completely
-#     model.step(100.0)
-#     assert q1.qty == approx(10.0)
-#     assert q2.qty == approx(10.0)
+    # Run for a long time to fully discharge
+    source.rate_capacity = -5.0
 
-#     # The positive rate port shuts off, so the quantity
-#     # ports should source.
-#     r1.rate_capacity = 0.0
-#     model.step(1.0)
-#     assert r2.rate == approx(-5.0)
-#     assert q1.qty == approx(7.5)
-#     assert q2.qty == approx(7.5)
-#     model.step(3.0)
-#     assert r2.rate == approx(-5.0)
-#     assert q1.qty == approx(0.0)
-#     assert q2.qty == approx(0.0)
-#     model.step(1.0)
-#     assert r2.rate == approx(0.0)
-#     assert q1.qty == approx(0.0)
-#     assert q2.qty == approx(0.0)
+    for i in range(100):
+        model.step(0.5)
+
+    assert source.rate == approx(0.0)
+    assert tank.qty == approx(0.0)
+    assert tank.rate == approx(0.0)
+
+
+def test_run_model_with_quantity():
+    model = FlowModel()
+    r1 = model.add_port("r1", FlowPort(0, 0))
+    r2 = model.add_port("r2", FlowPort(0, 0))
+    q1 = model.add_port("q1", FlowPort(0, 10.0))
+    q2 = model.add_port("q2", FlowPort(0, 10.0))
+
+    model.link_ports(r1, r2)
+    model.link_ports(r1, q1)
+    model.link_ports(r1, q2)
+
+    # The rate ports have positive net capacity, so
+    # the quantity ports increase.
+    r1.rate_capacity = 10.0
+    r2.rate_capacity = -5.0
+    model.step(1.0)
+    assert q1.qty == approx(2.5)
+    assert q2.qty == approx(2.5)
+
+    # The quantity ports should fill up completely
+    model.step(100.0)
+    assert q1.qty == approx(10.0)
+    assert q2.qty == approx(10.0)
+
+    # The positive rate port shuts off, so the quantity
+    # ports should source.
+    r1.rate_capacity = 0.0
+    model.step(1.0)
+    assert r2.rate == approx(-5.0)
+    assert q1.qty == approx(7.5)
+    assert q2.qty == approx(7.5)
+    model.step(3.0)
+    assert r2.rate == approx(-5.0)
+    assert q1.qty == approx(0.0)
+    assert q2.qty == approx(0.0)
+    model.step(1.0)
+    assert r2.rate == approx(0.0)
+    assert q1.qty == approx(0.0)
+    assert q2.qty == approx(0.0)
 
 
 def test_throw_exception_when_linking_unadded_node():

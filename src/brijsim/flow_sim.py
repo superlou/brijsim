@@ -93,12 +93,13 @@ class FlowModel:
 
             # No storage was discharged, but some could be charged
             # Divide the excess proportionally to quantity open
-            storage_supply = min(source_excess, storage_sink_qty_open)
+            storage_supply = min(source_excess, storage_sink_qty_open / dt)
             for storage_sink in storage_sinks:
                 storage_sink.rate = (
                     -storage_supply * storage_sink.qty_open / storage_sink_qty_open
                 )
                 storage_sink.qty += -storage_sink.rate * dt
+                print(storage_sink.qty)
 
             # Supply is divided proportionally to capacity:
             supply = sink_supply + storage_supply
