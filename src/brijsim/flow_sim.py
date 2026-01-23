@@ -37,8 +37,17 @@ class FlowModel:
         self.graph.add_node(id, port=port)
         return port
 
-    def link_ports(self, port1_id: str, port2_id: str):
-        self.graph.add_edge(port1_id, port2_id)
+    def link_ports(self, port1: str, port2: str):
+        if not self.graph.has_node(port1):
+            raise KeyError(f"Node {port1} not found while linking ports.")
+
+        if not self.graph.has_node(port2):
+            raise KeyError(f"Node {port2} not found while linking ports.")
+
+        self.link_ports_by_id(port1, port2)
+
+    def link_ports_by_id(self, id1: str, id2: str):
+        self.graph.add_edge(id1, id2)
 
     def step(self, dt: float):
         for connected_nodes in nx.connected_components(self.graph):

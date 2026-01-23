@@ -1,3 +1,4 @@
+import pytest
 from pytest import approx
 
 from brijsim import FlowModel
@@ -109,3 +110,14 @@ def test_discharging_model():
 #     assert r2.rate == approx(0.0)
 #     assert q1.qty == approx(0.0)
 #     assert q2.qty == approx(0.0)
+
+
+def test_throw_exception_when_linking_unadded_node():
+    model = FlowModel()
+    model.add_port("source", FlowPort(1.0, 0.0))
+
+    with pytest.raises(KeyError):
+        model.link_ports("source", "garbage")
+
+    with pytest.raises(KeyError):
+        model.link_ports("garbage", "source")
