@@ -51,6 +51,17 @@ ship.link_ports("AuxGen1:src", "JumpCom1:pwr")
 ship.link_ports("Tank1:fuel", "AuxGen1:fuel")
 
 
+def flow_info_bar(flow_port, attr, text):
+    with (
+        ui.linear_progress(show_value=False, size="1.2em")
+        .bind_value_from(flow_port, attr)
+        .classes("w-48")
+    ):
+        ui.label().bind_text_from(flow_port, text).classes(
+            "text-black text-xs w-48 absolute flex flex-center"
+        )
+
+
 @ui.page("/")
 def root():
     ui.page_title("Index")
@@ -75,9 +86,10 @@ def root():
                     for flow_port_name, flow_port in element.flow_ports.items():
                         with ui.row():
                             ui.label(flow_port_name)
-                            ui.label().bind_text_from(
-                                flow_port, "flow_info", backward=lambda text: text
-                            )
+                        with ui.row():
+                            flow_info_bar(flow_port, "rate_fraction", "rate_info")
+                        with ui.row():
+                            flow_info_bar(flow_port, "qty_fraction", "qty_info")
 
                     with ui.row():
                         for action_name, action in element.actions.items():

@@ -32,8 +32,24 @@ class FlowPort:
         )
 
     @property
+    def rate_info(self):
+        return f"{self.rate:.0f}:{self.rate_capacity:.0f} {self.rate_unit}"
+
+    @property
+    def qty_info(self):
+        return f"{self.qty:.0f}:{self.qty_capacity:.0f} {self.qty_unit}"
+
+    @property
     def qty_open(self) -> float:
         return self.qty_capacity - self.qty
+
+    @property
+    def rate_fraction(self) -> float:
+        return self.rate / self.rate_capacity if self.rate_capacity != 0.0 else 0.0
+
+    @property
+    def qty_fraction(self) -> float:
+        return self.qty / self.qty_capacity if self.qty_capacity != 0.0 else 0.0
 
 
 class FlowModel:
@@ -99,7 +115,6 @@ class FlowModel:
                     -storage_supply * storage_sink.qty_open / storage_sink_qty_open
                 )
                 storage_sink.qty += -storage_sink.rate * dt
-                print(storage_sink.qty)
 
             # Supply is divided proportionally to capacity:
             supply = sink_supply + storage_supply
