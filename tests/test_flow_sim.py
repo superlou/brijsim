@@ -17,9 +17,9 @@ def test_run_model_without_quantity():
     p3 = model.add_port("p3", FlowPort(-4, 0))
     p4 = model.add_port("p4", FlowPort(-2, 0))
 
-    model.link_ports("p1", "p2")
-    model.link_ports("p1", "p3")
-    model.link_ports("p1", "p4")
+    model.link_ports(p1, p2)
+    model.link_ports(p2, p3)
+    model.link_ports(p1, p4)
 
     model.step(0.1)
 
@@ -49,7 +49,7 @@ def test_charging_model():
     model = FlowModel()
     source = model.add_port("source", FlowPort(1.0, 0.0))
     tank = model.add_port("tank", FlowPort(0.0, 5.0))
-    model.link_ports("source", "tank")
+    model.link_ports(source, tank)
 
     model.step(0.5)
 
@@ -62,7 +62,7 @@ def test_discharging_model():
     model = FlowModel()
     sink = model.add_port("sink", FlowPort(-1.0, 0.0))
     tank = model.add_port("tank", FlowPort(0.0, 5.0, qty=5.0))
-    model.link_ports("tank", "sink")
+    model.link_ports(tank, sink)
 
     model.step(0.5)
 
@@ -114,10 +114,24 @@ def test_discharging_model():
 
 def test_throw_exception_when_linking_unadded_node():
     model = FlowModel()
-    model.add_port("source", FlowPort(1.0, 0.0))
+    source = model.add_port("source", FlowPort(1.0, 0.0))
+    unadded_sink = FlowPort(-1.0, 0.0)
 
     with pytest.raises(KeyError):
         model.link_ports("source", "garbage")
 
     with pytest.raises(KeyError):
         model.link_ports("garbage", "source")
+
+    with pytest.raises(KeyError):
+        model.link_ports(source, unadded_sink)
+
+    with pytest.raises(KeyError):
+        model.link_ports(unadded_sink, source)
+
+
+def test_linking_by_reference():
+    model = FlowModel()
+    source = model.add_port("source", FlowPort(1.0, 0.0))
+    sink = model.add_port("sink", FlowPort(-1.0, 0.0))
+    model.link_ports(source, sink)

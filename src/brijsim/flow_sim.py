@@ -4,14 +4,22 @@ from math import isclose
 import networkx as nx
 
 
-@dataclass
 class FlowPort:
-    rate_capacity: float
-    qty_capacity: float
-    rate: float = 0.0
-    qty: float = 0.0
-    rate_unit: str = "W"
-    qty_unit: str = "J"
+    def __init__(
+        self,
+        rate_capacity: float,
+        qty_capacity: float,
+        rate: float = 0.0,
+        qty: float = 0.0,
+        rate_unit: str = "W",
+        qty_unit: str = "J",
+    ):
+        self.rate_capacity = rate_capacity
+        self.qty_capacity = qty_capacity
+        self.rate = rate
+        self.qty = qty
+        self.rate_unit = rate_unit
+        self.qty_unit = qty_unit
 
     def at_p_capacity(self):
         return isclose(self.rate, self.rate_capacity)
@@ -31,20 +39,24 @@ class FlowPort:
 class FlowModel:
     def __init__(self):
         self.graph = nx.Graph()
-        # todo Model ports in different connected graphs
+        self.node_ids: dict[FlowPort, str] = {}
 
-    def add_port(self, id: str, port: FlowPort):
+    def add_port(self, id: str, port: FlowPort) -> FlowPort:
         self.graph.add_node(id, port=port)
+        self.node_ids[port] = id
         return port
 
-    def link_ports(self, port1: str, port2: str):
-        if not self.graph.has_node(port1):
-            raise KeyError(f"Node {port1} not found while linking ports.")
+    def link_ports(self, port1: str | FlowPort, port2: str | FlowPort):
+        id1 = self.node_ids[port1] if isinstance(port1, FlowPort) else port1
+        id2 = self.node_ids[port2] if isinstance(port2, FlowPort) else port2
 
-        if not self.graph.has_node(port2):
-            raise KeyError(f"Node {port2} not found while linking ports.")
+        if not self.graph.has_node(id1):
+            raise KeyError(f"Node {id1} not found while linking ports.")
 
-        self.link_ports_by_id(port1, port2)
+        if not self.graph.has_node(id2):
+            raise KeyError(f"Node {id2} not found while linking ports.")
+
+        self.link_ports_by_id(id1, id2)
 
     def link_ports_by_id(self, id1: str, id2: str):
         self.graph.add_edge(id1, id2)
