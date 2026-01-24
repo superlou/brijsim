@@ -7,9 +7,10 @@ from loguru import logger
 from nicegui import Event, app, ui
 from websockets import ServerConnection
 
-from brijsim.elements.computer import JumpComputer
-from brijsim.elements.generator import AuxGenerator, FusionGenerator
-from brijsim.elements.tanks import FuelTank
+from brijsim.devices.computer import JumpComputer
+from brijsim.devices.generator import AuxGenerator, FusionGenerator
+from brijsim.devices.tanks import FuelTank
+from brijsim.region import Region
 from brijsim.ship import Ship
 
 connections: set[ServerConnection] = set()
@@ -39,6 +40,7 @@ async def handle_connect(websocket: ServerConnection):
         connections_updated.emit()
 
 
+region = Region()
 ship = Ship()
 ship.add_element(AuxGenerator("AuxGen1", 100.0))
 ship.add_element(FusionGenerator("FusGen1"))

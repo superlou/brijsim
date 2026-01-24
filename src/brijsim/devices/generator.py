@@ -1,6 +1,6 @@
 from enum import StrEnum, auto
 
-from brijsim.elements.element import Element
+from brijsim.devices.device import Device
 from brijsim.flow_sim import FlowPort
 
 
@@ -10,7 +10,7 @@ class FusionGeneratorState(StrEnum):
     RUNNING = auto()
 
 
-class FusionGenerator(Element):
+class FusionGenerator(Device):
     def __init__(self, name: str):
         super().__init__(name)
         self.flow_ports = {"src": FlowPort(0.0, 0.0), "boost": FlowPort(0.0, 0.0)}
@@ -40,7 +40,7 @@ class SimpleGeneratorState(StrEnum):
     RUNNING = auto()
 
 
-class AuxGenerator(Element):
+class AuxGenerator(Device):
     def __init__(self, name: str, rate_capacity: float):
         super().__init__(name)
         self.flow_ports = {
