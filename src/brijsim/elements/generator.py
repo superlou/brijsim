@@ -70,11 +70,11 @@ class AuxGenerator(Element):
 
                 self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
             case SimpleGeneratorState.STOPPING:
-                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
-
                 self.level -= 0.5 * dt
                 if self.level <= 0.0:
                     self.level = 0.0
                     self.state = SimpleGeneratorState.OFF
+
+                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
 
                 self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
