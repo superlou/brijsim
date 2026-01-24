@@ -95,7 +95,12 @@ def root():
 
                     with ui.row():
                         for action_name, action in element.actions.items():
-                            ui.button(action_name, on_click=action)
+                            ui.button(
+                                action_name,
+                                on_click=lambda evt,
+                                action=action,
+                                element=element: action(element),
+                            )
 
     builder = networkx_mermaid.builders.DiagramBuilder(
         orientation=networkx_mermaid.DiagramOrientation.LEFT_RIGHT,

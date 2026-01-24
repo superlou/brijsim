@@ -14,9 +14,9 @@ class FusionGenerator(Device):
     def __init__(self, name: str):
         super().__init__(name)
         self.flow_ports = {"src": FlowPort(0.0, 0.0), "boost": FlowPort(0.0, 0.0)}
-        self.actions = {"start": self.start}
         self.state = FusionGeneratorState.OFF
 
+    @Device.action
     def start(self):
         if self.state != FusionGeneratorState.OFF:
             return
@@ -47,14 +47,15 @@ class AuxGenerator(Device):
             "src": FlowPort(0.0, 0.0),
             "fuel": FlowPort(0.0, 0.0, rate_unit="kg/h", qty_unit="kg"),
         }
-        self.actions = {"start": self.start, "stop": self.stop}
         self.state = SimpleGeneratorState.OFF
         self.rate_capacity = rate_capacity
         self.level: float = 0.0
 
+    @Device.action
     def start(self):
         self.state = SimpleGeneratorState.STARTING
 
+    @Device.action
     def stop(self):
         self.state = SimpleGeneratorState.STOPPING
 
