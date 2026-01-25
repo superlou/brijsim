@@ -62,20 +62,17 @@ class AuxGenerator(Device):
     def process(self, dt: float):
         match self.state:
             case SimpleGeneratorState.STARTING:
-                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
-
                 self.level += 0.5 * dt
                 if self.level >= 1.0:
                     self.level = 1.0
                     self.state = SimpleGeneratorState.RUNNING
-
-                self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
             case SimpleGeneratorState.STOPPING:
                 self.level -= 0.5 * dt
                 if self.level <= 0.0:
                     self.level = 0.0
                     self.state = SimpleGeneratorState.OFF
 
-                self.flow_ports["fuel"].rate_capacity = -350.0 * self.level
-
-                self.flow_ports["src"].rate_capacity = self.level * self.rate_capacity
+        self.flow_ports["fuel"].rate_capacity = -2000.0 * self.level
+        self.flow_ports["src"].rate_capacity = (
+            self.level * self.rate_capacity * self.flow_ports["fuel"].rate_fraction
+        )
