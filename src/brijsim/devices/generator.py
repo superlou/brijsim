@@ -45,7 +45,7 @@ class AuxGenerator(Device):
         super().__init__(name)
         self.flow_ports = {
             "src": FlowPort(0.0, 0.0),
-            "fuel": FlowPort(0.0, 0.0, rate_unit="kg/h", qty_unit="kg"),
+            "fuel": FlowPort(0.0, 0.0, rate_unit="kg/s", qty_unit="kg"),
         }
         self.state = SimpleGeneratorState.OFF
         self.rate_capacity = rate_capacity
