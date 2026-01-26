@@ -12,6 +12,7 @@ class Device(Body3D):
         self.name = name
         self.flow_ports: dict[str, FlowPort] = {}
         self.state = None
+        super().__init__()
 
     def process(self, dt: float):
         pass

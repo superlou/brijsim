@@ -7,12 +7,16 @@ from loguru import logger
 from nicegui import Event, app, ui
 from websockets import ServerConnection
 
+from brijsim.body_3d import BoxShape3D, Vector3
 from brijsim.device_view import device_view
 from brijsim.devices.computer import JumpComputer
 from brijsim.devices.generator import AuxGenerator, FusionGenerator
+from brijsim.devices.hatch import Hatch
 from brijsim.devices.tanks import FuelTank
 from brijsim.region import Region
 from brijsim.ship import Ship
+from brijsim.ship.room import Room
+from brijsim.ship_view import ship_view
 
 connections: set[ServerConnection] = set()
 connections_updated = Event()
@@ -43,10 +47,24 @@ async def handle_connect(websocket: ServerConnection):
 
 region = Region()
 ship = Ship()
-ship.add_device(AuxGenerator("AuxGen1", 100.0))
-ship.add_device(FusionGenerator("FusGen1"))
-ship.add_device(JumpComputer("JumpCom1"))
-ship.add_device(FuelTank("Tank1", 40000.0, 40000.0))
+
+ship.add_room("Hall1", Room(Vector3.ZERO, 1000, BoxShape3D(Vector3(20, 4, 3))))
+storage1 = ship.add_room(
+    "Storage1", Room(Vector3(0.0, 4, 0.0), 1000, BoxShape3D(Vector3(4, 4, 3)))
+)
+storage2 = ship.add_room(
+    "Storage2", Room(Vector3(4, 4, 0.0), 1000, BoxShape3D(Vector3(4, 4, 3)))
+)
+engineering = ship.add_room(
+    "Engine Room", Room(Vector3(-10, 0, 0), 4000, BoxShape3D(Vector3(10, 15, 3)))
+)
+
+ship.add_device(Hatch("S1S2Hatch", [storage1, storage2]))
+
+engineering.add_device(AuxGenerator("AuxGen1", 100.0))
+engineering.add_device(FusionGenerator("FusGen1"))
+storage1.add_device(JumpComputer("JumpCom1"))
+storage2.add_device(FuelTank("Tank1", 40000.0, 40000.0))
 
 ship.link_ports("AuxGen1:src", "FusGen1:boost")
 ship.link_ports("FusGen1:src", "JumpCom1:pwr")
@@ -67,10 +85,16 @@ def root():
 
     ui.label("Index")
 
+    devices = [
+        device for room in ship.rooms.values() for device in room.devices
+    ] + ship.devices
+
     with ui.grid(columns=4):
-        for device in ship.device:
+        for device in devices:
             with ui.list().props("bordered"):
                 device_view(device)
+
+    ship_view(ship)
 
     builder = networkx_mermaid.builders.DiagramBuilder(
         orientation=networkx_mermaid.DiagramOrientation.LEFT_RIGHT,
