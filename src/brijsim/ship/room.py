@@ -3,8 +3,9 @@ from brijsim.devices.device import Device
 
 
 class Room(Body3D):
-    def __init__(self, position: Vector3, mass: float, shape: Shape3D):
+    def __init__(self, name: str, position: Vector3, mass: float, shape: Shape3D):
         super().__init__(position, mass, shape)
+        self.name = name
         self.devices: list[Device] = []
         self.parent: "Ship" | None = None
 

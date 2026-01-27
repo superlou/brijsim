@@ -7,7 +7,7 @@ from brijsim.ship.room import Room
 class Ship(Body3D):
     def __init__(self):
         self.devices: list[Device] = []
-        self.rooms: dict[str, Room] = {}
+        self.rooms: list[Room] = []
         self.flow_model = FlowModel()
         super().__init__()
 
@@ -18,9 +18,9 @@ class Ship(Body3D):
 
         return device
 
-    def add_room(self, name: str, room: Room):
+    def add_room(self, room: Room):
         room.parent = self
-        self.rooms[name] = room
+        self.rooms.append(room)
         return room
 
     def link_ports(self, port1_id: str, port2_id: str):
@@ -31,6 +31,9 @@ class Ship(Body3D):
         for device in self.devices:
             device.process(dt)
 
-        for room in self.rooms.values():
+        for room in self.rooms:
             for device in room.devices:
                 device.process(dt)
+
+    def find_room_by_name(self, name: str) -> Room:
+        return [room for room in self.rooms if room.name == name][0]

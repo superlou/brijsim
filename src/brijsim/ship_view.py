@@ -15,7 +15,7 @@ def ship_view(ship: Ship):
 
     content = ""
 
-    for name, room in ship.rooms.items():
+    for room in ship.rooms:
         ul_x, ul_y = tx(
             (
                 room.position.x - room.shape.size.x / 2,
@@ -26,7 +26,7 @@ def ship_view(ship: Ship):
         content += f'<rect x={ul_x} y={ul_y} width={ws} height={hs} fill="#001030" stroke="#0060F0" stroke-width="1" />'
 
         text_x, text_y = tx((room.position.x, room.position.y))
-        content += f'<text x="{text_x}" y="{text_y}" text="Test" fill="white" text-anchor="middle" dominant-baseline="middle">{name}</text>'
+        content += f'<text x="{text_x}" y="{text_y}" text="Test" fill="white" text-anchor="middle" dominant-baseline="middle">{room.name}</text>'
 
         for device in room.devices:
             cx, cy = tx(

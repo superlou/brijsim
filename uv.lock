@@ -178,6 +178,7 @@ dependencies = [
     { name = "networkx-mermaid" },
     { name = "nicegui" },
     { name = "numpy" },
+    { name = "pyyaml" },
     { name = "uvicorn" },
     { name = "websockets" },
 ]
@@ -195,6 +196,7 @@ requires-dist = [
     { name = "networkx-mermaid", specifier = ">=0.3.0" },
     { name = "nicegui", specifier = ">=3.5.0" },
     { name = "numpy", specifier = ">=2.4.1" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "uvicorn", specifier = ">=0.40.0" },
     { name = "websockets", specifier = ">=16.0" },
 ]

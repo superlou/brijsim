@@ -1,0 +1,49 @@
+name: Demo Ship
+rooms:
+  - name: Hall 1
+    position: [0, 0, 0]
+    mass: 1000
+    shape:
+      type: BoxShape3D
+      size: [20, 4, 3]
+    devices:
+      - name: Hatch 1
+        type: Hatch
+        linked_rooms: ["Storage 1", "Storage 2"]
+  - name: Storage 1
+    position: [0, 4, 0]
+    mass: 1000
+    shape:
+        type: BoxShape3D
+        size: [4, 4, 3]
+    devices:
+      - name: JumpCom1
+        type: JumpComputer
+  - name: Storage 2
+    position: [4, 4, 0]
+    mass: 1000
+    shape:
+      type: BoxShape3D
+      size: [4, 4, 3]
+    devices:
+      - name: Tank1
+        type: FuelTank
+        qty_max: 40000.0
+        qty: 40000.0
+  - name: Engineering
+    position: [-10, 0, 0]
+    mass: 4000
+    shape:
+      type: BoxShape3D
+      size: [10, 15, 3]
+    devices:
+      - name: FusGen1
+        type: FusionGenerator
+      - name: AuxGen1
+        type: AuxGenerator
+        rate_capacity: 100.0
+port_links:
+  - ["AuxGen1:src", "FusGen1:boost"]
+  - ["FusGen1:src", "JumpCom1:pwr"]
+  - ["AuxGen1:src", "JumpCom1:pwr"]
+  - ["Tank1:fuel", "AuxGen1:fuel"]
