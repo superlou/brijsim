@@ -13,6 +13,7 @@ from brijsim.devices.computer import JumpComputer
 from brijsim.devices.generator import AuxGenerator, FusionGenerator
 from brijsim.devices.hatch import Hatch
 from brijsim.devices.tanks import FuelTank
+from brijsim.node import SceneTree
 from brijsim.region import Region
 from brijsim.ship import Ship
 from brijsim.ship.room import Room
@@ -46,8 +47,9 @@ async def handle_connect(websocket: ServerConnection):
         connections_updated.emit()
 
 
-region = Region()
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")
+tree = SceneTree()
+tree.add_child(ship)
 
 
 @ui.page("/")
@@ -87,7 +89,7 @@ class RepeatTimer(threading.Timer):
 
 def main(reload=False):
     logger.info(f"Starting nicegui, reload={reload}")
-    RepeatTimer(0.1, lambda: ship.process(0.1)).start()
+    RepeatTimer(0.1, lambda: tree.process(0.1)).start()
     ui.run(reload=reload, uvicorn_reload_includes="*.py,*.yaml")
 
 

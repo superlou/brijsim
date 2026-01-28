@@ -17,7 +17,7 @@ class ShipLoader:
 
         data = yaml.load(file_path.read_text(), Loader=yaml.Loader)
 
-        ship = Ship()
+        ship = Ship(data["name"])
 
         for room_data in data["rooms"]:
             name = room_data["name"]
@@ -27,7 +27,7 @@ class ShipLoader:
             shape = BoxShape3D(size)
 
             room = Room(name, position, mass, shape)
-            ship.add_room(room)
+            ship.add_child(room)
 
         for room_data in data["rooms"]:
             room = ship.find_room_by_name(room_data["name"])
@@ -58,7 +58,7 @@ class ShipLoader:
                         device = None
 
                 if device:
-                    room.add_device(device)
+                    room.add_child(device)
 
         for port1, port2 in data["port_links"]:
             ship.link_ports(port1, port2)

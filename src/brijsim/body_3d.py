@@ -36,11 +36,13 @@ class BoxShape3D(Shape3D):
 class Body3D(Node):
     def __init__(
         self,
+        name: str,
         position: Vector3 = Vector3.ZERO,
         mass: float = 0.0,
         shape: Shape3D = EmptyShape3D(),
         rotation: Vector3 = Vector3.ZERO,
     ):
+        super().__init__(name)
         self.position = position
         self.mass = mass
         self.shape = shape

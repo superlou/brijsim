@@ -1,17 +1,16 @@
 from brijsim.body_3d import Body3D, Shape3D, Vector3
 from brijsim.devices.device import Device
+from brijsim.node import Node
 
 
 class Room(Body3D):
-    def __init__(self, name: str, position: Vector3, mass: float, shape: Shape3D):
-        super().__init__(position, mass, shape)
-        self.name = name
-        self.devices: list[Device] = []
-        self.parent: "Ship" | None = None
+    def add_child(self, child: Node):
+        super().add_child(child)
 
-    def add_device(self, device: Device):
-        self.devices.append(device)
-        for port_name, port in device.flow_ports.items():
-            self.parent.flow_model.add_port(f"{device.name}:{port_name}", port)
+        if isinstance(child, Device):
+            for port_name, port in child.flow_ports.items():
+                self.parent.flow_model.add_port(f"{child.name}:{port_name}", port)
 
-        return device
+    @property
+    def devices(self) -> list[Device]:
+        return [child for child in self.children if isinstance(child, Device)]

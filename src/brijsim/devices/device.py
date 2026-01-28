@@ -9,13 +9,9 @@ from brijsim.flow_sim import FlowPort
 
 class Device(Body3D):
     def __init__(self, name: str):
-        self.name = name
+        super().__init__(name)
         self.flow_ports: dict[str, FlowPort] = {}
         self.state = None
-        super().__init__()
-
-    def process(self, dt: float):
-        pass
 
     @staticmethod
     def action(func):
