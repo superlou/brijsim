@@ -16,7 +16,6 @@ class ShipLoader:
         file_path = Path(filename)
 
         data = yaml.load(file_path.read_text(), Loader=yaml.Loader)
-        print(data)
 
         ship = Ship()
 

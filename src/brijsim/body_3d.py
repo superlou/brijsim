@@ -2,6 +2,8 @@ from typing import ClassVar, Self
 
 from attr import dataclass
 
+from brijsim.node import Node
+
 
 @dataclass
 class Vector3:
@@ -31,7 +33,7 @@ class BoxShape3D(Shape3D):
         self.size = size
 
 
-class Body3D:
+class Body3D(Node):
     def __init__(
         self,
         position: Vector3 = Vector3.ZERO,
