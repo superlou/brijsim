@@ -11,3 +11,6 @@ class Node:
 
     def process(self, delta: float):
         pass
+
+    def get_children_by_type[T](self, type_: type[T]) -> list[T]:
+        return [child for child in self.children if isinstance(child, type_)]

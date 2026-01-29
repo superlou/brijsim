@@ -19,11 +19,11 @@ class Ship(Body3D):
 
     @property
     def rooms(self) -> list[Room]:
-        return [child for child in self.children if isinstance(child, Room)]
+        return self.get_children_by_type(Room)
 
     @property
     def devices(self) -> list[Device]:
-        return [child for child in self.children if isinstance(child, Device)]
+        return self.get_children_by_type(Device)
 
     def link_ports(self, port1_id: str, port2_id: str):
         self.flow_model.link_ports(port1_id, port2_id)
