@@ -7,18 +7,18 @@ from loguru import logger
 from nicegui import Event, app, ui
 from websockets import ServerConnection
 
-from brijsim.body_3d import BoxShape3D, Vector3
 from brijsim.device_view import device_view
 from brijsim.devices.computer import JumpComputer
 from brijsim.devices.generator import AuxGenerator, FusionGenerator
 from brijsim.devices.hatch import Hatch
 from brijsim.devices.tanks import FuelTank
-from brijsim.node import SceneTree
 from brijsim.region import Region
 from brijsim.ship import Ship
 from brijsim.ship.room import Room
 from brijsim.ship.ship_loader import ShipLoader
 from brijsim.ship_view import ship_view
+
+from .pydot import SceneTree
 
 connections: set[ServerConnection] = set()
 connections_updated = Event()

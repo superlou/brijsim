@@ -1,6 +1,6 @@
-from brijsim.body_3d import Body3D, Shape3D, Vector3
 from brijsim.devices.device import Device
-from brijsim.node import Node
+
+from ..pydot import Body3D, Node
 
 
 class Room(Body3D):

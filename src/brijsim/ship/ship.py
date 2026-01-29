@@ -1,8 +1,8 @@
-from brijsim.body_3d import Body3D
 from brijsim.devices.device import Device
 from brijsim.flow_sim import FlowModel
-from brijsim.node import Node
 from brijsim.ship.room import Room
+
+from ..pydot import Body3D, Node
 
 
 class Ship(Body3D):

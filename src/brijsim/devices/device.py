@@ -3,8 +3,9 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
-from brijsim.body_3d import Body3D
 from brijsim.flow_sim import FlowPort
+
+from ..pydot import Body3D
 
 
 class Device(Body3D):

@@ -2,13 +2,14 @@ from pathlib import Path
 
 import yaml
 
-from brijsim.body_3d import BoxShape3D, Vector3
 from brijsim.devices.computer import JumpComputer
 from brijsim.devices.generator import AuxGenerator, FusionGenerator
 from brijsim.devices.hatch import Hatch
 from brijsim.devices.tanks import FuelTank
 from brijsim.ship.room import Room
 from brijsim.ship.ship import Ship
+
+from ..pydot import BoxShape3D, Vector3
 
 
 class ShipLoader:
