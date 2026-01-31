@@ -13,5 +13,8 @@ class Vector3:
     def abs(self) -> "Vector3":
         return Vector3(abs(self.x), abs(self.y), abs(self.z))
 
+    def to_tuple(self) -> tuple[float, float, float]:
+        return (self.x, self.y, self.z)
+
 
 Vector3.ZERO = Vector3(0, 0, 0)

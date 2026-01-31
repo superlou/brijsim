@@ -25,14 +25,14 @@ def ship_view(ship: Ship):
         ws, hs = room.shape.size.x * SVG_SCALE, room.shape.size.y * SVG_SCALE
         content += f'<rect x={ul_x} y={ul_y} width={ws} height={hs} fill="#001030" stroke="#0060F0" stroke-width="1" />'
 
-        text_x, text_y = tx((room.position.x, room.position.y))
+        text_x, text_y = tx((room.global_position.x, room.global_position.y))
         content += f'<text x="{text_x}" y="{text_y}" text="Test" fill="white" text-anchor="middle" dominant-baseline="middle">{room.name}</text>'
 
         for device in room.devices:
             cx, cy = tx(
                 (
-                    room.position.x + device.position.x,
-                    room.position.y + device.position.y,
+                    room.global_position.x + device.global_position.x,
+                    room.global_position.y + device.global_position.y,
                 )
             )
             content += (
@@ -40,7 +40,7 @@ def ship_view(ship: Ship):
             )
 
     for device in ship.devices:
-        cx, cy = tx((device.position.x, device.position.y))
+        cx, cy = tx((device.global_position.x, device.global_position.y))
         content += (
             f'<circle cx="{cx}" cy="{cy}" r=10 stroke="#0060F0" stroke-width="1" />'
         )

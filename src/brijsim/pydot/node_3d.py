@@ -1,20 +1,40 @@
-from brijsim.pydot.transform_3d import Transform3D
+from SpatialTransform import Transform
+
 from brijsim.pydot.vector3 import Vector3
 
 from .node import Node
-
-# todo If I come back to this, consider https://github.com/Wasserwecken/spatial-transform
 
 
 class Node3D(Node):
     def __init__(self, name: str):
         super().__init__(name)
-        self.transform = Transform3D()
+        self.transform: Transform = Transform()
+
+    def add_child(self, child: Node):
+        super().add_child(child)
+        if isinstance(child, Node3D):
+            self.transform.attach(child.transform)
 
     @property
-    def position(self):
-        return self.transform.origin
+    def position(self) -> Vector3:
+        return Vector3(
+            self.transform.Position.x,
+            self.transform.Position.y,
+            self.transform.Position.z,
+        )
 
     @position.setter
     def position(self, value: Vector3):
-        self.transform.origin = value
+        self.transform.Position = value.to_tuple()
+
+    @property
+    def global_position(self) -> Vector3:
+        return Vector3(
+            self.transform.PositionWorld.x,
+            self.transform.PositionWorld.y,
+            self.transform.PositionWorld.z,
+        )
+
+    @global_position.setter
+    def global_position(self, value: Vector3):
+        self.transform.PositionWorld = value.to_tuple()

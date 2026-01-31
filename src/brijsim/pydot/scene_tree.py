@@ -6,7 +6,7 @@ class SceneTree:
         self.root = SceneTreeRoot("root")
         self.process_time = 0.0
 
-    def add_child(self, child: "Node"):
+    def add_child(self, child: Node):
         self.root.add_child(child)
 
     def process(self, delta: float):

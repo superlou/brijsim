@@ -1,4 +1,4 @@
-from .node import Node
+from .node_3d import Node3D
 from .vector3 import Vector3
 
 
@@ -16,7 +16,7 @@ class BoxShape3D(Shape3D):
         self.size = size
 
 
-class Body3D(Node):
+class Body3D(Node3D):
     def __init__(
         self,
         name: str,
