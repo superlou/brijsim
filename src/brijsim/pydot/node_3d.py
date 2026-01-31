@@ -1,3 +1,4 @@
+import glm
 from SpatialTransform import Transform
 
 from brijsim.pydot.vector3 import Vector3
@@ -25,7 +26,7 @@ class Node3D(Node):
 
     @position.setter
     def position(self, value: Vector3):
-        self.transform.Position = value.to_tuple()
+        self.transform.Position = glm.vec3(value.x, value.y, value.z)
 
     @property
     def global_position(self) -> Vector3:
@@ -37,4 +38,4 @@ class Node3D(Node):
 
     @global_position.setter
     def global_position(self, value: Vector3):
-        self.transform.PositionWorld = value.to_tuple()
+        self.transform.PositionWorld = glm.vec3(value.x, value.y, value.z)
