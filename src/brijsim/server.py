@@ -12,6 +12,7 @@ from brijsim.devices.computer import JumpComputer
 from brijsim.devices.generator import AuxGenerator, FusionGenerator
 from brijsim.devices.hatch import Hatch
 from brijsim.devices.tanks import FuelTank
+from brijsim.pydot.vector3 import Vector3
 from brijsim.region import Region
 from brijsim.ship import Ship
 from brijsim.ship.room import Room
@@ -50,6 +51,10 @@ async def handle_connect(websocket: ServerConnection):
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")
 tree = SceneTree()
 tree.add_child(ship)
+
+ship.transform.printTree()
+for item, index, depth in ship.transform.layout():
+    print(f"{item.Position} {item.PositionWorld} {item.Name}")
 
 
 @ui.page("/")

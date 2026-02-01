@@ -9,12 +9,15 @@ from .node import Node
 class Node3D(Node):
     def __init__(self, name: str):
         super().__init__(name)
-        self.transform: Transform = Transform()
+        self.transform: Transform = Transform(self.name)
 
     def add_child(self, child: Node):
         super().add_child(child)
         if isinstance(child, Node3D):
+            # https://github.com/Wasserwecken/spatial-transform/issues/4
+            position = child.transform.Position
             self.transform.attach(child.transform)
+            child.transform.Position = position
 
     @property
     def position(self) -> Vector3:
