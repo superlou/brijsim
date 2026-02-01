@@ -21,11 +21,7 @@ class Node3D(Node):
 
     @property
     def position(self) -> Vector3:
-        return Vector3(
-            self.transform.Position.x,
-            self.transform.Position.y,
-            self.transform.Position.z,
-        )
+        return Vector3(*self.transform.Position.to_list())
 
     @position.setter
     def position(self, value: Vector3):
@@ -33,11 +29,7 @@ class Node3D(Node):
 
     @property
     def global_position(self) -> Vector3:
-        return Vector3(
-            self.transform.PositionWorld.x,
-            self.transform.PositionWorld.y,
-            self.transform.PositionWorld.z,
-        )
+        return Vector3(*self.transform.PositionWorld.to_list())
 
     @global_position.setter
     def global_position(self, value: Vector3):
