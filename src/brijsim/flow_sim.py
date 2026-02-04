@@ -77,6 +77,9 @@ class FlowModel:
     def link_ports_by_id(self, id1: str, id2: str):
         self.graph.add_edge(id1, id2)
 
+    def connected_nodes(self):
+        return nx.connected_components(self.graph)
+
     def step(self, dt: float):
         for connected_nodes in nx.connected_components(self.graph):
             self.solve_connected_components(

@@ -1,7 +1,6 @@
 import asyncio
 import threading
 
-import networkx_mermaid
 import websockets
 from loguru import logger
 from nicegui import Event, app, ui
@@ -74,11 +73,12 @@ def root():
 
     ship_view(ship)
 
-    builder = networkx_mermaid.builders.DiagramBuilder(
-        orientation=networkx_mermaid.DiagramOrientation.LEFT_RIGHT,
-        node_shape=networkx_mermaid.DiagramNodeShape.ROUND_RECTANGLE,
-    )
-    ui.mermaid(builder.build(ship.flow_model.graph))
+    ui.label("Connected ports")
+    with ui.grid(columns=4):
+        for nodes in ship.flow_model.connected_nodes():
+            with ui.list().props("dense bordered"):
+                for node in nodes:
+                    ui.item(node)
 
 
 class RepeatTimer(threading.Timer):
