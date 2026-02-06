@@ -40,20 +40,22 @@ async def handle_connect(websocket: ServerConnection):
         connections_updated.emit()
 
 
-region = Region("Region1")
+region = Region("Region 1")
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")
 tree = SceneTree()
 tree.add_child(region)
 region.add_child(ship)
 
 ship.transform.printTree()
-for item, index, depth in ship.transform.layout():
-    print(f"{item.Position} {item.PositionWorld} {item.Name}")
 
 
 @ui.page("/")
 def root():
-    ui.page_title("Index")
+    ui.label().bind_text_from(
+        ship,
+        "region",
+        lambda x: f"Location: {x.name}" if isinstance(x, Region) else "Region: ?",
+    )
 
     dark = ui.dark_mode(True)
 

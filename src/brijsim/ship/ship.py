@@ -1,5 +1,6 @@
 from brijsim.devices.device import Device
 from brijsim.flow_sim import FlowModel
+from brijsim.region import Region
 from brijsim.ship.room import Room
 
 from ..pydot import Body3D, Node
@@ -33,3 +34,9 @@ class Ship(Body3D):
 
     def find_room_by_name(self, name: str) -> Room:
         return [room for room in self.rooms if room.name == name][0]
+
+    @property
+    def region(self) -> Region | None:
+        # todo This should recurse upwards
+        if isinstance(self.parent, Region):
+            return self.parent
