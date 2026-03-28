@@ -1,7 +1,7 @@
 from brijsim.devices.device import Device
 from brijsim.flow_sim import FlowModel
-from brijsim.region import Region
 from brijsim.ship.room import Room
+from brijsim.universe.region import Region
 
 from ..pydot import Body3D, Node
 

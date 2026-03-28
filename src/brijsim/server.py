@@ -7,9 +7,10 @@ from nicegui import Event, app, ui
 from websockets import ServerConnection
 
 from brijsim.device_view import device_view
-from brijsim.region import Region
 from brijsim.ship.ship_loader import ShipLoader
 from brijsim.ship_view import ship_view
+from brijsim.universe import Region
+from brijsim.universe.universe import Universe
 
 from .pydot import SceneTree
 
@@ -40,13 +41,21 @@ async def handle_connect(websocket: ServerConnection):
         connections_updated.emit()
 
 
-region = Region("Region 1")
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")
-tree = SceneTree()
-tree.add_child(region)
-region.add_child(ship)
 
-ship.transform.printTree()
+tree = SceneTree()
+universe = Universe("Universe")
+region1 = Region("Region 1")
+region2 = Region("Region 2")
+tree.add_child(universe)
+universe.add_region(region1)
+universe.add_region(region2)
+region1.add_child(ship)
+
+# r1w = region1.add_wormhole()
+# r2w = region2.add_wormhole()
+
+region1.transform.printTree()
 
 
 @ui.page("/")
