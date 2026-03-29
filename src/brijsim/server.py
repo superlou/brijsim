@@ -3,8 +3,7 @@ import threading
 
 import websockets
 from loguru import logger
-from nicegui import Event, app, ui
-from websockets import ServerConnection
+from nicegui import app, ui
 
 from brijsim.device_view import device_view
 from brijsim.ship.ship_loader import ShipLoader
@@ -12,33 +11,14 @@ from brijsim.ship_view import ship_view
 from brijsim.universe import Region
 from brijsim.universe.universe import Universe
 
+from . import server_ws
 from .pydot import SceneTree
-
-connections: set[ServerConnection] = set()
-connections_updated = Event()
-messaged_received = Event()
 
 
 @app.on_startup
 async def start_websocket_server():
-    async with websockets.serve(handle_connect, "localhost", 8765):
+    async with websockets.serve(server_ws.handle_connect, "localhost", 8765):
         await asyncio.Future()
-
-
-async def handle_connect(websocket: ServerConnection):
-    try:
-        connections.add(websocket)
-        connections_updated.emit()
-
-        while True:
-            await websocket.send("test")
-            await asyncio.sleep(1.0)
-
-        async for message in websocket:
-            messaged_received.emit(str(message))
-    finally:
-        connections.remove(websocket)
-        connections_updated.emit()
 
 
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")
