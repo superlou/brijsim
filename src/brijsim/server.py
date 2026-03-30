@@ -17,8 +17,10 @@ from .pydot import SceneTree
 
 @app.on_startup
 async def start_websocket_server():
-    async with websockets.serve(server_ws.handle_connect, "localhost", 8765):
-        await asyncio.Future()
+    async with websockets.serve(
+        lambda ws: server_ws.handler(ws, tree), "localhost", 8765
+    ) as server:
+        await server.serve_forever()
 
 
 ship = ShipLoader().load("assets/ships/demo_ship.yaml")

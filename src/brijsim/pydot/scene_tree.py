@@ -1,4 +1,8 @@
+from typing import Type, TypeVar
+
 from .node import Node
+
+T = TypeVar("T")
 
 
 class SceneTree:
@@ -20,6 +24,23 @@ class SceneTree:
             self._process_child(_child, delta)
 
         child.process(delta)
+
+    def find_nodes_by_type(
+        self, type_: Type[T], current: Node | None = None, found: set[T] | None = None
+    ) -> set[T]:
+        if current is None:
+            current = self.root
+
+        if found is None:
+            found = set([])
+
+        if isinstance(current, type_):
+            found.add(current)
+
+        for child in current.children:
+            self.find_nodes_by_type(type_, child, found)
+
+        return found
 
 
 class SceneTreeRoot(Node):
