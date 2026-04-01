@@ -1,6 +1,7 @@
 from enum import StrEnum, auto
 
 from brijsim.devices.device import Device
+from brijsim.devices.panel import DeviceBarGauge, DeviceButton, LabeledString, Panel
 from brijsim.flow_sim import FlowPort
 
 
@@ -50,6 +51,27 @@ class AuxGenerator(Device):
         self.state = SimpleGeneratorState.OFF
         self.rate_capacity = rate_capacity
         self.level: float = 0.0
+
+    @property
+    def panel(self):
+        return Panel(
+            self.name,
+            [
+                LabeledString("State", str(self.state)),
+                DeviceBarGauge(
+                    "Source",
+                    self.flow_ports["src"].rate,
+                    self.flow_ports["src"].rate_capacity,
+                ),
+                DeviceBarGauge(
+                    "Fuel Flow",
+                    self.flow_ports["fuel"].rate,
+                    self.flow_ports["fuel"].rate_capacity,
+                ),
+                DeviceButton("Start", "start"),
+                DeviceButton("Stop", "stop"),
+            ],
+        )
 
     @Device.action
     def start(self):

@@ -35,7 +35,7 @@ def device_details(device: Device) -> dict:
 
     details = {"name": device.name, "widgets": [] + [state] + actions}
 
-    return details
+    return device.panel.to_dict()
 
 
 async def state_sender(websocket, tree: SceneTree):

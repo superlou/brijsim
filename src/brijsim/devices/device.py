@@ -3,6 +3,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
+from brijsim.devices.panel import Panel
 from brijsim.flow_sim import FlowPort
 
 from ..pydot import Body3D
@@ -13,6 +14,10 @@ class Device(Body3D):
         super().__init__(name)
         self.flow_ports: dict[str, FlowPort] = {}
         self.state = None
+
+    @property
+    def panel(self):
+        return Panel(name=self.name, widgets=[])
 
     @staticmethod
     def action(func):
