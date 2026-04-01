@@ -48,38 +48,6 @@ async def state_sender(websocket, tree: SceneTree):
                     {
                         "type": "devices",
                         "data": [device_details(device) for device in devices],
-                        # "data": [
-                        #     {
-                        #         "name": "AuxGen1",
-                        #         "type": "AuxGenerator",
-                        #         "widgets": [
-                        #             {
-                        #                 "component": "labeled-string",
-                        #                 "data": {
-                        #                     "label": "state",
-                        #                     "value": "off",
-                        #                     "level": "normal",
-                        #                 },
-                        #             },
-                        #             {
-                        #                 "component": "device-bar-gauge",
-                        #                 "data": {
-                        #                     "label": "power",
-                        #                     "value": 600,
-                        #                     "max": 1000,
-                        #                 },
-                        #             },
-                        #             {
-                        #                 "component": "labeled-string",
-                        #                 "data": {
-                        #                     "label": "ready",
-                        #                     "value": "true",
-                        #                     "level": "normal",
-                        #                 },
-                        #             },
-                        #         ],
-                        #     },
-                        # ],
                     }
                 )
             )
@@ -100,6 +68,7 @@ async def handler(websocket: ServerConnection, tree: SceneTree):
         connections_updated.emit()
 
         async for message in websocket:
+            print(f"Received: {message}")
             messaged_received.emit(str(message))
     finally:
         connections.remove(websocket)
