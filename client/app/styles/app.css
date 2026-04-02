@@ -1,0 +1,145 @@
+@font-face {
+  font-family: Monda;
+  src: url('/fonts/monda/Monda-VariableFont_wght.ttf') format('truetype');
+}
+
+:root {
+  --primary-color: #7af;
+  --advisory-color: #fff;
+  --caution-color: #ea0;
+  --warning-color: #e20;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+}
+
+button {
+  border: 1px solid var(--primary-color);
+  background: none;
+  color: var(--primary-color);
+  padding: 0.4em 1em;
+
+  &:hover {
+    background: var(--primary-color);
+    color: black;
+  }
+
+  &:active {
+    background: white;
+    border-color: white;
+  }
+}
+
+.panel {
+  background: #111;
+  height: 100vh;
+  width: 100vw;
+  color: var(--primary-color);
+  font-family: Monda, sans-serif;
+}
+
+.device-map {
+  height: 50vh;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.device-details {
+  height: 50vh;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.device-detail {
+  height: 100%;
+  border: 1px solid var(--primary-color);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 50%;
+
+  .header {
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+
+    .title {
+      background: var(--primary-color);
+      color: #000;
+      padding: 0.1em 0.4em;
+      width: fit-content;
+    }
+  }
+
+  .widgets {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    overflow-y: scroll;
+  }
+}
+
+.device-widget {
+  width: 100%;
+  padding-bottom: 4px;
+}
+
+.widget-labeled-string {
+  display: flex;
+
+  div {
+    flex: 1;
+    padding: 0.2em 1em;
+  }
+
+  div.value {
+    border: 1px solid var(--primary-color);
+    text-align: center;
+  }
+
+  div.level-advisory {
+    border: 1px solid var(--advisory-color);
+    color: var(--advisory-color);
+  }
+
+  div.level-caution {
+    border: 1px solid var(--caution-color);
+    color: black;
+    background: var(--caution-color);
+  }
+
+  div.level-warning {
+    border: 1px solid var(--warning-color);
+    color: black;
+    background: var(--warning-color);
+  }
+}
+
+.widget-device-bar-gauge {
+  display: flex;
+
+  div {
+    flex: 1;
+    padding: 0.2em 1em;
+  }
+
+  .value {
+    border: 1px solid var(--primary-color);
+    text-align: center;
+    position: relative;
+    background: linear-gradient(
+      to right,
+      #036,
+      #036 var(--percent),
+      #0000 var(--percent),
+      #0000 100%
+    );
+  }
+}
