@@ -55,6 +55,7 @@ class AuxGenerator(Device):
     @property
     def panel(self):
         return Panel(
+            self.uuid,
             self.name,
             [
                 LabeledString("State", str(self.state)),

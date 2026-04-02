@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass
+from uuid import UUID
 
 from inflection import dasherize, underscore
 
@@ -36,9 +37,13 @@ class DeviceBarGauge(Widget):
 
 @dataclass
 class Panel:
+    device_uuid: str
     name: str
     widgets: list[Widget]
 
     def to_dict(self) -> dict:
-        w = {"name": self.name, "widgets": [w.to_dict() for w in self.widgets]}
-        return w
+        return {
+            "device_uuid": self.device_uuid,
+            "name": self.name,
+            "widgets": [w.to_dict() for w in self.widgets],
+        }

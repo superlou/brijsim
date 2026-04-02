@@ -17,7 +17,7 @@ class Device(Body3D):
 
     @property
     def panel(self):
-        return Panel(name=self.name, widgets=[])
+        return Panel(self.uuid, name=self.name, widgets=[])
 
     @staticmethod
     def action(func):

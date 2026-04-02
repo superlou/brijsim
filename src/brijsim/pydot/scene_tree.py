@@ -7,8 +7,9 @@ T = TypeVar("T")
 
 class SceneTree:
     def __init__(self):
-        self.root = SceneTreeRoot("root")
+        self.root = SceneTreeRoot("root", self)
         self.process_time = 0.0
+        self.node_uuid_map: dict[str, Node] = {}
 
     def add_child(self, child: Node):
         self.root.add_child(child)
@@ -44,4 +45,6 @@ class SceneTree:
 
 
 class SceneTreeRoot(Node):
-    pass
+    def __init__(self, name: str, scene_tree: SceneTree):
+        super().__init__(name)
+        self.scene_tree = scene_tree

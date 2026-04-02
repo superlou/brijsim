@@ -1,5 +1,6 @@
 import asyncio
 import json
+import traceback
 
 import websockets
 from loguru import logger
@@ -15,26 +16,6 @@ messaged_received = Event()
 
 
 def device_details(device: Device) -> dict:
-    actions = [
-        {
-            "component": "device-button",
-            "data": {"label": action_name, "cmd": action_name},
-        }
-        for action_name, action in device.actions.items()
-    ]
-
-    if hasattr(device, "state"):
-        state = {
-            "component": "labeled-string",
-            "data": {
-                "label": "state",
-                "value": device.state,
-                "level": "normal",
-            },
-        }
-
-    details = {"name": device.name, "widgets": [] + [state] + actions}
-
     return device.panel.to_dict()
 
 
@@ -68,8 +49,18 @@ async def handler(websocket: ServerConnection, tree: SceneTree):
         connections_updated.emit()
 
         async for message in websocket:
+            message = json.loads(message)
             print(f"Received: {message}")
             messaged_received.emit(str(message))
+
+            if message["type"] == "device-action":
+                device_uuid = message["data"]["device_uuid"]
+                action = message["data"]["action"]
+                device = tree.node_uuid_map[device_uuid]
+                device.actions[action](device)
+
+    except Exception as _exc:
+        traceback.print_exc()
     finally:
         connections.remove(websocket)
         sender_task.cancel()
