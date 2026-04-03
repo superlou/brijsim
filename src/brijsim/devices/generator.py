@@ -33,6 +33,27 @@ class FusionGenerator(Device):
                     self.flow_ports["boost"].rate_capacity = 0
                     self.flow_ports["src"].rate_capacity = 100.0
 
+    @property
+    def panel(self):
+        return Panel(
+            self.uuid,
+            self.name,
+            [
+                LabeledString("State", str(self.state)),
+                DeviceBarGauge(
+                    "Source",
+                    self.flow_ports["src"].rate,
+                    self.flow_ports["src"].rate_capacity,
+                ),
+                DeviceBarGauge(
+                    "Boost",
+                    self.flow_ports["boost"].rate,
+                    self.flow_ports["boost"].rate_capacity,
+                ),
+                DeviceButton("Start", "start"),
+            ],
+        )
+
 
 class SimpleGeneratorState(StrEnum):
     OFF = auto()

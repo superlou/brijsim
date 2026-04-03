@@ -12,7 +12,9 @@ export default class CounterComponent extends Component {
   <template>
     <div class="device-widget widget-device-bar-gauge">
       <div>{{@data.label}}</div>
-      <div class="value" style="--percent: {{this.percent}}%">{{format_number @data.value}}</div>
+      <div class="value" style="--percent: {{this.percent}}%">
+        {{format_number @data.value}} / {{format_number @data.max}}
+      </div>
     </div>
   </template>
 }

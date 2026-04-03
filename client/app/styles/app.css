@@ -91,6 +91,15 @@ button {
   padding-bottom: 4px;
 }
 
+.widget-device-button {
+  width: 100%;
+
+  button {
+    width: 100%;
+    font-size: 18px;
+  }
+}
+
 .widget-labeled-string {
   display: flex;
 
