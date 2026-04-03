@@ -15,7 +15,8 @@ export default class EngPanel extends Component {
       </div>
 
       <div class="device-details">
-        {{#each this.ServerConnection.devices as |device| }}
+        {{this.serverConnection.game_state}}
+        {{#each this.ServerConnection.game_state.devices as |device| }}
           <DeviceDetail @name={{device.name}} @uuid={{device.uuid}} @widgets={{device.widgets}}
                         @send_device_action={{this.ServerConnection.send_device_action}} />
         {{/each}}

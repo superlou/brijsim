@@ -32,7 +32,7 @@ async def state_sender(websocket, tree: SceneTree):
                     }
                 )
             )
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.025)
         except websockets.ConnectionClosed:
             break
         except Exception as e:

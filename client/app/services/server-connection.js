@@ -14,10 +14,15 @@ class Widget {
   data = trackedObject({});
 }
 
+class GameState {
+  devices = trackedArray([]);
+}
+
 export default class ServerConnectionService extends Service {
   server_uri = 'ws://127.0.0.1:8765';
   websocket = null;
-  devices = trackedArray([]);
+  // devices = trackedArray([]);
+  @tracked game_state = new GameState();
   @tracked connected = false;
 
   on_open = () => {
@@ -63,16 +68,17 @@ export default class ServerConnectionService extends Service {
   };
 
   on_msg_devices = (data) => {
-    for (let d of this.devices) {
-      d.seen = false;
+    let devices = this.game_state.devices;
+    for (let device of devices) {
+      device.seen = false;
     }
 
     // todo Filter out unseen widgets
     for (const d of data) {
-      let device = this.devices.find((device) => device.uuid === d.device_uuid);
+      let device = devices.find((device) => device.uuid === d.device_uuid);
       if (!device) {
         device = new Device();
-        this.devices.push(device);
+        devices.push(device);
       }
 
       device.uuid = d.device_uuid;
@@ -89,14 +95,14 @@ export default class ServerConnectionService extends Service {
           device.widgets.push(widget);
         }
         widget.component = w.component;
-        widget.data = w.data;
+        Object.assign(widget.data, w.data);
       }
     }
 
     // Remove unseen devices in place
-    for (let i = this.devices.length - 1; i >= 0; i--) {
-      if (!this.devices[i].seen) {
-        this.devices.splice(i, 1);
+    for (let i = devices.length - 1; i >= 0; i--) {
+      if (!devices[i].seen) {
+        devices.splice(i, 1);
       }
     }
   };
